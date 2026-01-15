@@ -4,9 +4,6 @@
 
 > **A.R.I.S.** (Automated Robot Inventory System) ist eine hochperformante Lager-Simulation, die autonome Roboter-Agenten, Pfadfindungs-Algorithmen und persistente Datenbank-Verwaltung in einer C++ Echtzeit-Anwendung vereint.
 
-![ARIS Screenshot](docs/screenshot_placeholder.png)
-*(Hinweis: Screenshot der Simulation hier einfügen)*
-
 ---
 
 ## 📖 Über das Projekt
