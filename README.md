@@ -1,128 +1,149 @@
-# SFML Project Template
+# A.R.I.S. – Automated Robot Inventory System
 
-A cross-platform template for C++ SFML projects using CMake
+![C++](https://img.shields.io/badge/C++-17-blue.svg) ![Build](https://img.shields.io/badge/build-passing-brightgreen.svg) ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
-## How to use?
+> **A.R.I.S.** (Automated Robot Inventory System) ist eine hochperformante Lager-Simulation, die autonome Roboter-Agenten, Pfadfindungs-Algorithmen und persistente Datenbank-Verwaltung in einer C++ Echtzeit-Anwendung vereint.
 
-### Clone
+![ARIS Screenshot](docs/screenshot_placeholder.png)
+*(Hinweis: Screenshot der Simulation hier einfügen)*
 
-There are two ways to use this project template. You can either create your own GitHub repo using this template (very similar to forking) or your can directly clone this repo on your local machine. Here are the steps for both these ways:
+---
 
-1. GitHub repo using template
+## 📖 Über das Projekt
 
-    - Make sure you are logged into your GitHub account.
+Dieses Projekt demonstriert die Entwicklung komplexer **Simulations-Software** unter Verwendung moderner C++ Standards. Ziel war es, ein "Smart Warehouse" zu simulieren, in dem mehrere Roboter-Agenten effizient Aufträge abarbeiten, Kollisionen vermeiden und Inventarveränderungen in Echtzeit in einer SQL-Datenbank protokollieren.
 
-    - Click on the "Use this template" button.
+Das System trennt strikt zwischen **Logik (Simulation)**, **Datenhaltung (SQLite)** und **Visualisierung (SFML/ImGui)**.
 
-        ![Use this template button](readme-assets/use-this-template-button.png)
+### ✨ Key Features
 
-    - Provide a name for your new repo.
+* **Multi-Agent System:** Steuerung mehrerer Roboter, die parallel Aufgaben erledigen.
+* **Intelligentes Pathfinding:** Implementierung des **A* (A-Star)** Algorithmus zur dynamischen Wegfindung um Hindernisse.
+* **Datenbank-Integration:** SQLite-Backend zur Verwaltung von Produkten, Lagerplätzen und Bestell-Logs.
+* **Echtzeit-Dashboard:** Integration von **Dear ImGui** zur Anzeige von Live-Statistiken, Logs und Inventar-Tabellen.
+* **Visuelle Simulation:** Flüssiges Rendering des Lager-Grids und der Agenten mittels **SFML**.
 
-    - Click "Create repository from template".
+---
 
-    - Clone your new repo recursively.
+## 🛠 Tech Stack
 
-    ```bash
-    git clone --recursive <your-repo-link-here>
-    ```
+* **Sprache:** C++17
+* **Build System:** CMake (kompatibel mit `Make`, `Ninja`, CLion, VS Code)
+* **Grafik & Windowing:** [SFML 2.6](https://www.sfml-dev.org/)
+* **UI Overlay:** [Dear ImGui](https://github.com/ocornut/imgui)
+* **Datenbank:** [SQLite3](https://www.sqlite.org/)
+* **Testing:** GoogleTest (Optional)
 
-2. Local repo by direcly cloning
+---
 
-    - Clone this repo recursively using this command:
+## 🚀 Installation & Build
 
-    ```bash
-    git clone --recursive https://github.com/ufrshubham/sfml-project-template.git
-    ```
+### Voraussetzungen
 
-**Note:** If you've already cloned this repo without using `--recursive` flag, just run `git submodule update --init` to update the submodules.
+Stelle sicher, dass folgende Tools installiert sind:
+* C++ Compiler (GCC, Clang oder MSVC)
+* CMake (Version 3.15+)
+* SFML Development Libraries
+* SQLite3 Development Libraries
 
-### Code
+### 1. Repository klonen
 
-- Source files should be placed under `src` directory.
+```bash
+git clone [https://github.com/DEIN_USERNAME/ARIS.git](https://github.com/DEIN_USERNAME/ARIS.git)
+cd ARIS
 
-- Header files should be placed under `include` directory. Header `Version.hpp` can be removed completely as it is just for demo.
+```
 
-- Source code for SFML is pulled as a submodule under `vendors/sfml` and is built along with your code.
+### 2. Dependencies installieren
 
-- Assets like images, audio and fonts can be placed under `resources` directory. If you choose to use a custom directory for this, you'll have to handle how your executable finds those assets. The demo code in `src/main.cpp` programitically changes the working directory to the path where `resources` directory is located (see function `modifyCurrentWorkingDirectory()`).
+**Ubuntu / Debian:**
 
-### Build
+```bash
+sudo apt-get install libsfml-dev libsqlite3-dev
 
-- Make a directory for build in your project root.
+```
 
-    ```bash
-    cmake -E make_directory ./build
-    ```
+**macOS (Homebrew):**
 
-- Go to the build directory.
+```bash
+brew install sfml sqlite
 
-    ```bash
-    cd build/
-    ```
+```
 
-- Generate project files (For debug builds, replace `Release` with `Debug`).
+**Windows:**
+Am einfachsten ist die Nutzung eines Paketmanagers wie **vcpkg** oder die Konfiguration über CMake in CLion.
 
-    ```bash
-    cmake .. -DCMAKE_BUILD_TYPE=Release
-    ```
+### 3. Build (Terminal / Make)
 
-- Build (For debug builds, replace `Release` with `Debug`).
+```bash
+mkdir build
+cd build
+cmake ..
+make
+./ARIS
 
-    ```bash
-    cmake --build . --config Release
-    ```
+```
 
-- The executables will be available in build/bin.
+### 4. Nutzung in CLion (JetBrains)
 
-### GitHub Workflow (Build and Release)
+1. Öffne den Ordner `ARIS` in CLion.
+2. CLion erkennt automatisch die `CMakeLists.txt` und lädt das Projekt.
+3. Falls SFML nicht automatisch gefunden wird, füge unter `File -> Settings -> Build, Execution, Deployment -> CMake` in den **CMake Options** folgendes hinzu:
+`-DSFML_DIR=Pfad/zu/SFML/lib/cmake/SFML`
+4. Klicke auf **Build** (Hammer-Icon) und dann **Run** (Play-Button).
 
-This project includes an automated GitHub Actions workflow for building and releasing your application across multiple platforms (Windows, macOS, and Linux).
+---
 
-#### Build Trigger
+## 🏗 Architektur
 
-- To trigger the build workflow, push a version tag to the repository (e.g., v1.0.0), after pushing your recent code changes.
+Das Projekt folgt einer modularen Architektur (Separation of Concerns):
 
-    ```bash
-    git tag v1.0.0
-    git push origin v1.0.0
-    ```
+```text
+ARIS/
+├── src/
+│   ├── Core/           # Hauptschleife (Game Loop) und Zeitmanagement
+│   ├── Simulation/     # Logik: Grid, RobotAgent, Pathfinding (A*)
+│   ├── Database/       # SQL-Wrapper und Query-Manager
+│   ├── Renderer/       # SFML-Zeichenroutinen
+│   └── UI/             # ImGui Dashboard-Code
+├── include/            # Header-Dateien (.h)
+├── assets/             # Texturen, Fonts, Datenbank-File (.db)
+├── tests/              # Unit Tests
+└── CMakeLists.txt      # Build Konfiguration
 
-    **Note:** The build workflow will not run again if the same tag is pushed multiple times. To retrigger the workflow, you must delete the existing tag locally and on the remote, then recreate and push it.
+```
 
-    ```bash
-    git tag -d v1.0.0
-    git push origin --delete v1.0.0
+### Core-Konzepte
 
-    git tag v1.0.0
-    git push origin v1.0.0
-    ```
+1. **Grid System:** Das Lager ist in Kacheln (Tiles) unterteilt. Jede Kachel hat Eigenschaften (Wand, Regal, Ladestation).
+2. **Task Management:** Ein zentraler `OrderManager` holt offene Aufträge aus der Datenbank und weist sie dem nächsten verfügbaren Roboter zu (Producer-Consumer Prinzip).
+3. **Persistenz:** Jede Warenbewegung wird transaktional in der SQLite-DB gespeichert (`COMMIT` erst nach erfolgreicher Lieferung).
 
-#### Release Trigger
+---
 
-- To publish a release, go to the Releases tab and select either "Create a new release" or "Draft a new release" (depending on whether releases exist).
+## 🔜 Roadmap & TODOs
 
-    ![Create a new release button](readme-assets/create-new-release..png)
+* [] Grundlegendes Grid & Rendering
+* [] A* Pathfinding Implementierung
+* [] Roboter-Bewegung & Animation
+* [ ] **Heatmap-Visualisierung:** Anzeige stark frequentierter Wege
+* [ ] **Collision Avoidance:** Erweiterte Logik, damit Roboter einander ausweichen
+* [ ] **Netzwerk-Support:** Trennung von Server (Simulation) und Client (Viewer)
 
-    ![Draft a new release button](readme-assets/draft-new-release.png)
+---
 
-- Select a version tag by clicking "Choose a tag".
+## 🤝 Contributing
 
-    ![Choose a tag option](readme-assets/choose-tag.png)
+Pull Requests sind willkommen! Für größere Änderungen öffne bitte zuerst ein Issue, um die Änderung zu diskutieren.
 
-    **Note:** Ensure the tag is created and pushed beforehand.. 
+## 📄 Lizenz
 
-- Click "Publish release".
+Dieses Projekt ist unter der MIT Lizenz veröffentlicht - siehe [LICENSE](https://www.google.com/search?q=LICENSE) Datei für Details.
 
-    ![Publish release button](readme-assets/publish-release.png)
+---
 
-    (This action will trigger the build workflow again, once it is completed, the release workflow will begin. Upon successful completion, the build files for all platforms along with the source code will be uploaded.)
+**Entwickelt von voricc (Devrim Yildiz)**
 
-    ![Published releases](readme-assets/published-releases.png)
+```
 
-## License
-
-This project is released under MIT license. See [LICENSE.md](LICENSE.md) for details. Note that this does not cover any of the submodules located under [vendor](vendors/) and assets located under [resources](resources/).
-
-- [sfml](vendors/sfml/) is covered under [Zlib](vendors/sfml/license.md) license.
-
-- [FiraCode-Regular.ttf](resourcs/FiraCode-Regular.ttf) is covered under [OFL-1.1](https://github.com/tonsky/FiraCode/blob/master/LICENSE) license.
+```
