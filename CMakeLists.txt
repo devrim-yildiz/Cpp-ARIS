@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5.0)
-project(sfml-project VERSION 0.1.0)
+project(A.R.I.S VERSION 0.1.0)
 
 # As std::auto_ptr was removed in C++17, sfml-audio fails to compile
 # with following CXX standards. So instead of setting a global standard
@@ -18,7 +18,11 @@ file(GLOB_RECURSE ALL_SOURCE_FILES "${CMAKE_SOURCE_DIR}/src/*.cpp")
 file(GLOB_RECURSE ALL_HEADER_FILES "${CMAKE_SOURCE_DIR}/include/*.hpp")
 
 # Add the main target.
-add_executable(${PROJECT_NAME} ${ALL_SOURCE_FILES} ${ALL_HEADER_FILES})
+add_executable(${PROJECT_NAME} ${ALL_SOURCE_FILES} ${ALL_HEADER_FILES}
+        include/Simulation
+        include/Simulation/Robot.h
+        src/Simulation/Robot.cpp
+)
 
 # Use C++17 standards
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)

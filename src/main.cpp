@@ -2,6 +2,7 @@
 #include <filesystem>
 #include <iostream>
 #include "Version.hpp"
+#include "Simulation/Robot.h"
 
 static void modifyCurrentWorkingDirectory();
 static void setupVersionTexts(sf::RenderWindow &window, sf::Font &font, sf::Text &templateVersion, sf::Text &sfmlVersion);
@@ -11,16 +12,24 @@ int main()
     modifyCurrentWorkingDirectory();
 
     const auto clearColor = sf::Color(234, 240, 206);
-    auto title = "Template-" + GetTemplateVersion() + "/SFML-" + GetSFMLVersion();
-    sf::RenderWindow window(sf::VideoMode(640, 360), title, sf::Style::Close);
+    auto title = "A.R.I.S Simulation";
+    sf::RenderWindow window(sf::VideoMode(1280, 720), title, sf::Style::Close);
 
     sf::Font font;
     sf::Text sfmlVersion;
     sf::Text templateVersion;
 
+    Robot myRobot(1, 0, 0);
+    std::cout << "Roboter ID: " << myRobot.getId() << " gestartet." << std::endl;
+    std::cout << "Position: " << myRobot.getX() << ", " << myRobot.getY() << std::endl;
+
+    std::cout << "Bewege Roboter nach rechts..." << std::endl;
+    myRobot.move(1, 0); // x+1, y+0
+
+    std::cout << "Neue Position: " << myRobot.getX() << ", " << myRobot.getY() << std::endl;
+
     if (font.loadFromFile("resources/FiraCode-Regular.ttf"))
     {
-        setupVersionTexts(window, font, templateVersion, sfmlVersion);
     }
 
     while (window.isOpen())
@@ -41,37 +50,6 @@ int main()
     }
 
     return 0;
-}
-
-void setupVersionTexts(sf::RenderWindow &window, sf::Font &font, sf::Text &templateVersion, sf::Text &sfmlVersion)
-{
-    auto windowCenter = sf::Vector2f(window.getSize().x * 0.5f, window.getSize().y * 0.5f);
-    const auto characterSize = 65;
-    const auto outlineThickness = 4.f;
-    const auto fillColor = sf::Color(63, 51, 77);
-    const auto outlineColor = sf::Color(192, 197, 193);
-
-    templateVersion.setFont(font);
-    templateVersion.setString("Template-v" + GetTemplateVersion());
-    templateVersion.setCharacterSize(characterSize);
-    templateVersion.setFillColor(fillColor);
-    templateVersion.setOutlineColor(outlineColor);
-    templateVersion.setOutlineThickness(outlineThickness);
-
-    auto textRect = templateVersion.getLocalBounds();
-    templateVersion.setOrigin(textRect.left + textRect.width * 0.5f, textRect.top + textRect.height * 0.5f);
-    templateVersion.setPosition(windowCenter - sf::Vector2f(0.f, textRect.height));
-
-    sfmlVersion.setFont(font);
-    sfmlVersion.setString("SFML-v" + GetSFMLVersion());
-    sfmlVersion.setCharacterSize(characterSize);
-    sfmlVersion.setFillColor(fillColor);
-    sfmlVersion.setOutlineColor(outlineColor);
-    sfmlVersion.setOutlineThickness(outlineThickness);
-
-    textRect = sfmlVersion.getLocalBounds();
-    sfmlVersion.setOrigin(textRect.left + textRect.width * 0.5f, textRect.top + textRect.height * 0.5f);
-    sfmlVersion.setPosition(windowCenter + sf::Vector2f(0.f, textRect.height));
 }
 
 void modifyCurrentWorkingDirectory()
