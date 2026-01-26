@@ -5,6 +5,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "../Simulation/Grid.h"
+#include "Simulation/Robot.h"
 
 class WorldRenderer {
 public:
@@ -14,7 +15,8 @@ public:
     // The Main Function
     // notice: const Grid& grid
     // We promise not to touch the data, just look at it.
-    void Draw(sf::RenderWindow& window, const Grid& grid);
+    void DrawGrid(sf::RenderWindow& window, const Grid& grid);
+    void DrawRobots(sf::RenderWindow& window, const std::vector<Robot>& robots);
 
 private:
     // Helper to draw a single cell, keeps the main Draw() clean

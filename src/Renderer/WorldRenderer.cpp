@@ -6,7 +6,23 @@
 WorldRenderer::WorldRenderer() {
     // Empty for now. Later we will load textures here.
 }
-void WorldRenderer::Draw(sf::RenderWindow& window, const Grid& grid) {
+void WorldRenderer::DrawRobots(sf::RenderWindow& window, const std::vector<Robot>& robots) {
+    float robotSize = m_cellSize * 0.8f; // Make them slightly smaller than the cell
+    float offset = (m_cellSize - robotSize) / 2.0f; // Center them
+
+    sf::CircleShape robotShape(robotSize / 2.0f); // Radius is half the size
+    robotShape.setFillColor(sf::Color::Cyan);
+
+    for (const auto& robot : robots) {
+        // Math: Grid Coordinate -> Screen Pixel
+        float pixelX = robot.getX() * m_cellSize + offset;
+        float pixelY = robot.getY() * m_cellSize + offset;
+
+        robotShape.setPosition(pixelX, pixelY);
+        window.draw(robotShape);
+    }
+}
+void WorldRenderer::DrawGrid(sf::RenderWindow& window, const Grid& grid) {
     sf::RectangleShape cellShape(sf::Vector2f(m_cellSize - 1.0f, m_cellSize - 1.0f));
 
     for (int y = 0; y < grid.GetHeight(); ++y) {

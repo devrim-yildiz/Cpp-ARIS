@@ -6,7 +6,7 @@
 #include <SFML/Graphics.hpp>
 #include "Simulation/Grid.h"
 #include "Renderer/WorldRenderer.h"
-
+#include "Simulation/Robot.h"
 class Application {
 public:
     Application(); // Constructor: Sets up window, initializes Grid
@@ -22,6 +22,7 @@ private:
     sf::RenderWindow m_window;
     Grid m_grid;
     WorldRenderer m_renderer;
+    std::vector<Robot> m_robots;
 
     // Maybe some clock for timing delta-time
     sf::Clock m_clock;
