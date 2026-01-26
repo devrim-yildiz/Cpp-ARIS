@@ -5,6 +5,14 @@
 #include "Simulation/Pathfinder.h"
 #include <iostream>
 
+namespace {
+    constexpr float BATTERY_LOW_THRESHOLD = 20.0f;
+    constexpr float BATTERY_FULL = 100.0f;
+    constexpr float BATTERY_DRAIN_PER_MOVE = 0.5f;
+    constexpr float BATTERY_CHARGE_RATE = 2.0f;
+    constexpr float MOVE_INTERVAL_SECONDS = 0.2f;
+}
+
 Robot::Robot(int id, int startX, int startY)
     : m_id(id), m_x(startX), m_y(startY),
       m_state(RobotState::IDLE),
@@ -44,7 +52,7 @@ void Robot::ClearTask() {
 void Robot::Update(const Grid& grid, const std::vector<Robot>& allRobots, Pathfinder& pathfinder, float deltaTime) {
     m_moveTimer += deltaTime;
     
-    if (m_battery < 20.0f && m_state != RobotState::CHARGING && m_state != RobotState::LOW_BATTERY) {
+    if (m_battery < BATTERY_LOW_THRESHOLD && m_state != RobotState::CHARGING && m_state != RobotState::LOW_BATTERY) {
         m_state = RobotState::LOW_BATTERY;
         m_hasTask = false;
         m_isCarryingItem = false;
@@ -53,7 +61,7 @@ void Robot::Update(const Grid& grid, const std::vector<Robot>& allRobots, Pathfi
     
     ChargeBattery(grid);
     
-    if (m_state == RobotState::CHARGING && m_battery >= 100.0f) {
+    if (m_state == RobotState::CHARGING && m_battery >= BATTERY_FULL) {
         m_state = RobotState::IDLE;
     }
     
@@ -68,7 +76,7 @@ void Robot::Update(const Grid& grid, const std::vector<Robot>& allRobots, Pathfi
 }
 
 void Robot::UpdateState(const Grid& grid, const std::vector<Robot>& allRobots, Pathfinder& pathfinder) {
-    if (m_moveTimer < 0.2f) return;
+    if (m_moveTimer < MOVE_INTERVAL_SECONDS) return;
     m_moveTimer = 0.0f;
     
     switch (m_state) {
@@ -127,7 +135,7 @@ void Robot::MoveAlongPath(const Grid& grid) {
         m_totalDistance += 1.0f;
         m_x = nextPos.x;
         m_y = nextPos.y;
-        m_battery -= 0.5f;
+        m_battery -= BATTERY_DRAIN_PER_MOVE;
         if (m_battery < 0.0f) m_battery = 0.0f;
         m_pathIndex++;
     } else {
@@ -138,8 +146,8 @@ void Robot::MoveAlongPath(const Grid& grid) {
 
 void Robot::ChargeBattery(const Grid& grid) {
     if (grid.GetCell(m_x, m_y) == CellType::ChargingStation) {
-        m_battery += 2.0f;
-        if (m_battery > 100.0f) m_battery = 100.0f;
+        m_battery += BATTERY_CHARGE_RATE;
+        if (m_battery > BATTERY_FULL) m_battery = BATTERY_FULL;
     }
 }
 
@@ -174,7 +182,7 @@ void Robot::TryMove(int dx, int dy, const Grid& grid) {
     } else {
         m_x = targetX;
         m_y = targetY;
-        m_battery -= 0.5f;
+        m_battery -= BATTERY_DRAIN_PER_MOVE;
         if (m_battery < 0.0f) m_battery = 0.0f;
     }
 }

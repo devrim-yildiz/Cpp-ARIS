@@ -2,6 +2,10 @@
 #include <iostream>
 #include <ctime>
 
+namespace {
+    constexpr int GRID_SAVE_ID = 1;
+}
+
 DatabaseManager::DatabaseManager(const std::string& dbPath)
     : m_db(nullptr), m_dbPath(dbPath), m_logStmt(nullptr), m_statsStmt(nullptr)
 {
@@ -112,15 +116,16 @@ void DatabaseManager::UpdateRobotStats(int robotId, float distance, int tasksCom
 }
 
 bool DatabaseManager::SaveGrid(const Grid& grid) {
-    const char* sql = "INSERT OR REPLACE INTO grid_data (ID, Width, Height, CellData) VALUES (1, ?, ?, ?)";
+    const char* sql = "INSERT OR REPLACE INTO grid_data (ID, Width, Height, CellData) VALUES (?, ?, ?, ?)";
     sqlite3_stmt* stmt;
     
     if (sqlite3_prepare_v2(m_db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
         return false;
     }
     
-    sqlite3_bind_int(stmt, 1, grid.GetWidth());
-    sqlite3_bind_int(stmt, 2, grid.GetHeight());
+    sqlite3_bind_int(stmt, 1, GRID_SAVE_ID);
+    sqlite3_bind_int(stmt, 2, grid.GetWidth());
+    sqlite3_bind_int(stmt, 3, grid.GetHeight());
     
     std::vector<uint8_t> cellData;
     for (int y = 0; y < grid.GetHeight(); ++y) {
@@ -138,12 +143,14 @@ bool DatabaseManager::SaveGrid(const Grid& grid) {
 }
 
 bool DatabaseManager::LoadGrid(Grid& grid) {
-    const char* sql = "SELECT Width, Height, CellData FROM grid_data WHERE ID = 1";
+    const char* sql = "SELECT Width, Height, CellData FROM grid_data WHERE ID = ?";
     sqlite3_stmt* stmt;
     
     if (sqlite3_prepare_v2(m_db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
         return false;
     }
+    
+    sqlite3_bind_int(stmt, 1, GRID_SAVE_ID);
     
     bool success = false;
     if (sqlite3_step(stmt) == SQLITE_ROW) {

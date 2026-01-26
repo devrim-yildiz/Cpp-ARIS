@@ -3,6 +3,11 @@
 #include "Simulation/Grid.h"
 #include <iostream>
 #include <random>
+#include <limits>
+
+namespace {
+    constexpr int INFINITE_DISTANCE = std::numeric_limits<int>::max();
+}
 
 TaskManager::TaskManager()
     : m_completedTasks(0), m_nextItemId(1000)
@@ -42,7 +47,7 @@ void TaskManager::AssignTaskToNearestRobot(const Task& task, std::vector<Robot>&
 
 Robot* TaskManager::FindNearestIdleRobot(const Utils::Point& position, std::vector<Robot>& robots) {
     Robot* nearest = nullptr;
-    int minDist = 999999;
+    int minDist = INFINITE_DISTANCE;
     
     for (auto& robot : robots) {
         if (robot.IsIdle()) {
