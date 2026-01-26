@@ -41,8 +41,8 @@ void Robot::ClearTask() {
     m_pathIndex = 0;
 }
 
-void Robot::Update(const Grid& grid, const std::vector<Robot>& allRobots, Pathfinder& pathfinder) {
-    m_moveTimer += 0.016f;
+void Robot::Update(const Grid& grid, const std::vector<Robot>& allRobots, Pathfinder& pathfinder, float deltaTime) {
+    m_moveTimer += deltaTime;
     
     if (m_battery < 20.0f && m_state != RobotState::CHARGING && m_state != RobotState::LOW_BATTERY) {
         m_state = RobotState::LOW_BATTERY;

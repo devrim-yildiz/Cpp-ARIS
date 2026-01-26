@@ -9,7 +9,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin/)
 add_subdirectory(vendors/sfml/)
 
 set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/vendors/imgui)
-set(IMGUI_SFML_DIR ${CMAKE_SOURCE_DIR}/vendors/imgui)
 
 set(IMGUI_SOURCES
     ${IMGUI_DIR}/imgui.cpp

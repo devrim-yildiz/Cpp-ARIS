@@ -9,15 +9,16 @@
 Application::Application()
     : m_window(sf::VideoMode(1200, 800), "ARIS - Smart Warehouse Simulation"),
       m_grid(30, 20),
-      m_updateTimer(0.0f)
+      m_updateTimer(0.0f),
+      m_nextRobotId(1)
 {
     m_window.setFramerateLimit(60);
 
     InitializeGrid();
 
-    m_robots.emplace_back(1, 2, 2);
-    m_robots.emplace_back(2, 4, 4);
-    m_robots.emplace_back(3, 10, 10);
+    m_robots.emplace_back(m_nextRobotId++, 2, 2);
+    m_robots.emplace_back(m_nextRobotId++, 4, 4);
+    m_robots.emplace_back(m_nextRobotId++, 10, 10);
 
     m_database = std::make_unique<DatabaseManager>();
     if (!m_database->Initialize()) {
@@ -114,8 +115,9 @@ void Application::ProcessEvents() {
 }
 
 void Application::HandleRobotClick(int mouseX, int mouseY) {
-    int gridX = mouseX / 30;
-    int gridY = mouseY / 30;
+    float cellSize = 30.0f;
+    int gridX = static_cast<int>(mouseX / cellSize);
+    int gridY = static_cast<int>(mouseY / cellSize);
 
     for (const auto& robot : m_robots) {
         if (robot.getX() == gridX && robot.getY() == gridY) {
@@ -141,10 +143,9 @@ void Application::Update() {
         }
 
         if (m_dashboard->ShouldSpawnRobot() && m_robots.size() < 20) {
-            int newId = m_robots.size() + 1;
-            m_robots.emplace_back(newId, 2, 2);
-            m_database->LogEvent("ROBOT", "New robot spawned: " + std::to_string(newId));
-            std::cout << "Robot " << newId << " spawned" << std::endl;
+            m_robots.emplace_back(m_nextRobotId++, 2, 2);
+            m_database->LogEvent("ROBOT", "New robot spawned: " + std::to_string(m_nextRobotId - 1));
+            std::cout << "Robot " << (m_nextRobotId - 1) << " spawned" << std::endl;
         }
 
         if (m_dashboard->ShouldKillRobot() && !m_robots.empty()) {
@@ -163,7 +164,7 @@ void Application::Update() {
     m_taskManager.Update(m_robots, m_grid);
 
     for (auto& robot : m_robots) {
-        robot.Update(m_grid, m_robots, m_pathfinder);
+        robot.Update(m_grid, m_robots, m_pathfinder, deltaTime);
         m_grid.IncrementTraffic(robot.getX(), robot.getY());
     }
 

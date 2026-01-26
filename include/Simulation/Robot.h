@@ -14,7 +14,7 @@ class Robot {
 public:
     Robot(int id, int startX, int startY);
 
-    void Update(const Grid& grid, const std::vector<Robot>& allRobots, Pathfinder& pathfinder);
+    void Update(const Grid& grid, const std::vector<Robot>& allRobots, Pathfinder& pathfinder, float deltaTime);
     void TryMove(int dx, int dy, const Grid& grid);
     
     void AssignTask(const Utils::Point& pickup, const Utils::Point& drop, int itemId);

@@ -38,4 +38,5 @@ private:
     
     sf::Clock m_clock;
     float m_updateTimer;
+    int m_nextRobotId;
 };
