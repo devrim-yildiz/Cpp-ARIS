@@ -189,9 +189,9 @@ void Dashboard::RenderRobotInspector(const std::vector<Robot>& robots) {
     ImGui::End();
 }
 
-void Dashboard::ProcessEvent(const sf::Event& event) {
+void Dashboard::ProcessEvent(sf::RenderWindow& window, const sf::Event& event) {
     if (m_initialized) {
-        ImGui::SFML::ProcessEvent(event);
+        ImGui::SFML::ProcessEvent(window, event);
     }
 }
 

@@ -20,7 +20,7 @@ public:
         const TaskManager& taskManager,
         const Grid& grid
     );
-    void ProcessEvent(const sf::Event& event);
+    void ProcessEvent(sf::RenderWindow& window, const sf::Event& event);
     void Shutdown();
     
     bool ShouldAddTask() const { return m_addTaskRequested; }

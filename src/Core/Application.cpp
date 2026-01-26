@@ -83,7 +83,7 @@ void Application::ProcessEvents() {
     sf::Event event;
     while (m_window.pollEvent(event)) {
         if (m_dashboard) {
-            m_dashboard->ProcessEvent(event);
+            m_dashboard->ProcessEvent(m_window, event);
         }
 
         if (event.type == sf::Event::Closed)

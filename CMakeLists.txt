@@ -9,13 +9,14 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin/)
 add_subdirectory(vendors/sfml/)
 
 set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/vendors/imgui)
+set(IMGUI_SFML_DIR ${CMAKE_SOURCE_DIR}/vendors/imgui-sfml)
 
 set(IMGUI_SOURCES
     ${IMGUI_DIR}/imgui.cpp
     ${IMGUI_DIR}/imgui_draw.cpp
     ${IMGUI_DIR}/imgui_tables.cpp
     ${IMGUI_DIR}/imgui_widgets.cpp
-    ${IMGUI_DIR}/imgui-SFML.cpp
+    ${IMGUI_SFML_DIR}/imgui-SFML.cpp
 )
 
 file(GLOB_RECURSE ALL_SOURCE_FILES "${CMAKE_SOURCE_DIR}/src/*.cpp")
@@ -35,6 +36,7 @@ target_include_directories(
     PRIVATE ${PROJECT_SOURCE_DIR}/vendors/sfml/include/
     PRIVATE ${IMGUI_DIR}
     PRIVATE ${IMGUI_DIR}/backends
+    PRIVATE ${IMGUI_SFML_DIR}
 )
 
 target_link_libraries(${PROJECT_NAME} 
