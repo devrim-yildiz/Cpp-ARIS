@@ -96,26 +96,76 @@ bool DatabaseManager::ExecuteSQL(const std::string& sql) {
 }
 
 bool DatabaseManager::AddInventoryItem(const std::string& name, int quantity, const std::string& location) {
-    std::string sql = "INSERT OR REPLACE INTO inventory (name, quantity, location) VALUES ('" +
-                     name + "', " + std::to_string(quantity) + ", '" + location + "');";
-    return ExecuteSQL(sql);
+    sqlite3_stmt* stmt;
+    std::string sql = "INSERT OR REPLACE INTO inventory (name, quantity, location) VALUES (?, ?, ?);";
+    
+    if (sqlite3_prepare_v2(m_db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
+        std::cerr << "Failed to prepare statement: " << sqlite3_errmsg(m_db) << std::endl;
+        return false;
+    }
+    
+    sqlite3_bind_text(stmt, 1, name.c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_int(stmt, 2, quantity);
+    sqlite3_bind_text(stmt, 3, location.c_str(), -1, SQLITE_TRANSIENT);
+    
+    int result = sqlite3_step(stmt);
+    sqlite3_finalize(stmt);
+    
+    return result == SQLITE_DONE;
 }
 
 bool DatabaseManager::UpdateInventoryQuantity(const std::string& name, int quantity) {
-    std::string sql = "UPDATE inventory SET quantity = " + std::to_string(quantity) +
-                     ", last_updated = CURRENT_TIMESTAMP WHERE name = '" + name + "';";
-    return ExecuteSQL(sql);
+    sqlite3_stmt* stmt;
+    std::string sql = "UPDATE inventory SET quantity = ?, last_updated = CURRENT_TIMESTAMP WHERE name = ?;";
+    
+    if (sqlite3_prepare_v2(m_db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
+        std::cerr << "Failed to prepare statement: " << sqlite3_errmsg(m_db) << std::endl;
+        return false;
+    }
+    
+    sqlite3_bind_int(stmt, 1, quantity);
+    sqlite3_bind_text(stmt, 2, name.c_str(), -1, SQLITE_TRANSIENT);
+    
+    int result = sqlite3_step(stmt);
+    sqlite3_finalize(stmt);
+    
+    return result == SQLITE_DONE;
 }
 
 bool DatabaseManager::RemoveInventoryItem(const std::string& name) {
-    std::string sql = "DELETE FROM inventory WHERE name = '" + name + "';";
-    return ExecuteSQL(sql);
+    sqlite3_stmt* stmt;
+    std::string sql = "DELETE FROM inventory WHERE name = ?;";
+    
+    if (sqlite3_prepare_v2(m_db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
+        std::cerr << "Failed to prepare statement: " << sqlite3_errmsg(m_db) << std::endl;
+        return false;
+    }
+    
+    sqlite3_bind_text(stmt, 1, name.c_str(), -1, SQLITE_TRANSIENT);
+    
+    int result = sqlite3_step(stmt);
+    sqlite3_finalize(stmt);
+    
+    return result == SQLITE_DONE;
 }
 
 bool DatabaseManager::CreateTask(int robotId, const std::string& taskType, const std::string& target) {
-    std::string sql = "INSERT INTO tasks (robot_id, task_type, target) VALUES (" +
-                     std::to_string(robotId) + ", '" + taskType + "', '" + target + "');";
-    return ExecuteSQL(sql);
+    sqlite3_stmt* stmt;
+    std::string sql = "INSERT INTO tasks (robot_id, task_type, target) VALUES (?, ?, ?);";
+    
+    if (sqlite3_prepare_v2(m_db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
+        std::cerr << "Failed to prepare statement: " << sqlite3_errmsg(m_db) << std::endl;
+        return false;
+    }
+    
+    sqlite3_bind_int(stmt, 1, robotId);
+    sqlite3_bind_text(stmt, 2, taskType.c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 3, target.c_str(), -1, SQLITE_TRANSIENT);
+    
+    int result = sqlite3_step(stmt);
+    sqlite3_finalize(stmt);
+    
+    return result == SQLITE_DONE;
 }
 
 bool DatabaseManager::CompleteTask(int taskId) {
@@ -159,10 +209,23 @@ int DatabaseManager::GetCompletedTaskCount() {
 }
 
 bool DatabaseManager::LogRobotActivity(int robotId, const std::string& action, int x, int y) {
-    std::string sql = "INSERT INTO robot_activity (robot_id, action, position_x, position_y) VALUES (" +
-                     std::to_string(robotId) + ", '" + action + "', " +
-                     std::to_string(x) + ", " + std::to_string(y) + ");";
-    return ExecuteSQL(sql);
+    sqlite3_stmt* stmt;
+    std::string sql = "INSERT INTO robot_activity (robot_id, action, position_x, position_y) VALUES (?, ?, ?, ?);";
+    
+    if (sqlite3_prepare_v2(m_db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
+        std::cerr << "Failed to prepare statement: " << sqlite3_errmsg(m_db) << std::endl;
+        return false;
+    }
+    
+    sqlite3_bind_int(stmt, 1, robotId);
+    sqlite3_bind_text(stmt, 2, action.c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_int(stmt, 3, x);
+    sqlite3_bind_int(stmt, 4, y);
+    
+    int result = sqlite3_step(stmt);
+    sqlite3_finalize(stmt);
+    
+    return result == SQLITE_DONE;
 }
 
 int DatabaseManager::GetTotalInventoryItems() {

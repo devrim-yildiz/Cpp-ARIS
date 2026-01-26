@@ -17,7 +17,9 @@ UIPanel::UIPanel(const std::string& title, const sf::Vector2f& position, const s
     , m_textColor(sf::Color(220, 220, 225, 255))
 {
     if (!m_font.loadFromFile("resources/FiraCode-Regular.ttf")) {
-        std::cerr << "Warning: Could not load font for UI Panel" << std::endl;
+        std::cerr << "Warning: Could not load font resources/FiraCode-Regular.ttf for UI Panel. "
+                  << "UI text may not display correctly. Please ensure the font file exists in the resources directory." 
+                  << std::endl;
     }
     
     UpdateShapes();
