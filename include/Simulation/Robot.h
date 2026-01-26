@@ -13,6 +13,8 @@ public:
 
     int getX() const;
     int getY() const;
+    int setX(int x);
+    int setY(int y);
     int getId() const;
 
 private:

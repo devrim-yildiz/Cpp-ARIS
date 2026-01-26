@@ -14,8 +14,14 @@ int Grid::GetIndex(int x, int y) const {
 }
 
 CellType Grid::GetCell(int x, int y) const {
-    int idx = GetIndex(x, y);
-    return (idx == -1) ? CellType::Wall : m_cells[idx];
+    // bounds checkkk
+    if (x < 0 || x >= m_width || y < 0 || y >= m_height) {
+        return CellType::Wall;
+    }
+
+    int index = GetIndex(x, y);
+
+    return m_cells[index];
 }
 
 void Grid::SetCell(int x, int y, CellType type) {
