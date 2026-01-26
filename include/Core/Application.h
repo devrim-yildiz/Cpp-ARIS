@@ -5,25 +5,37 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "Simulation/Grid.h"
+#include "Simulation/Pathfinder.h"
 #include "Renderer/WorldRenderer.h"
 #include "Simulation/Robot.h"
+#include "Core/TaskManager.h"
+#include "Database/DatabaseManager.h"
+#include "UI/Dashboard.h"
+#include <memory>
+
 class Application {
 public:
-    Application(); // Constructor: Sets up window, initializes Grid
-    void Run();    // The "Game Loop": HandleInput -> Update -> Render
+    Application();
+    ~Application();
+    void Run();
 
 private:
-    void ProcessEvents(); // Keyboard/Mouse inputs
-    void Update();        // Move robots, update logic
-    void Render();        // clear -> worldRenderer.Draw() -> display
+    void ProcessEvents();
+    void Update();
+    void Render();
+    void InitializeGrid();
+    void HandleRobotClick(int mouseX, int mouseY);
 
 private:
-    // The Core Systems
     sf::RenderWindow m_window;
     Grid m_grid;
     WorldRenderer m_renderer;
     std::vector<Robot> m_robots;
-
-    // Maybe some clock for timing delta-time
+    Pathfinder m_pathfinder;
+    TaskManager m_taskManager;
+    std::unique_ptr<DatabaseManager> m_database;
+    std::unique_ptr<Dashboard> m_dashboard;
+    
     sf::Clock m_clock;
+    float m_updateTimer;
 };
