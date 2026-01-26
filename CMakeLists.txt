@@ -15,19 +15,10 @@ add_subdirectory(vendors/sfml/)
 
 # Collect all the source and header files (use GLOB in place of GLOB_RECURSE if you only want to collect the files from root dir)
 file(GLOB_RECURSE ALL_SOURCE_FILES "${CMAKE_SOURCE_DIR}/src/*.cpp")
-file(GLOB_RECURSE ALL_HEADER_FILES "${CMAKE_SOURCE_DIR}/include/*.hpp")
+file(GLOB_RECURSE ALL_HEADER_FILES "${CMAKE_SOURCE_DIR}/include/*.hpp" "${CMAKE_SOURCE_DIR}/include/*.h")
 
 # Add the main target.
-add_executable(${PROJECT_NAME} ${ALL_SOURCE_FILES} ${ALL_HEADER_FILES}
-        include/Simulation
-        include/Simulation/Robot.h
-        src/Simulation/Robot.cpp
-        src/Simulation/Grid.cpp
-        src/Renderer/WorldRenderer.cpp
-        include/Renderer/WorldRenderer.h
-        include/Core/Application.h
-        src/Core/Application.cpp
-)
+add_executable(${PROJECT_NAME} ${ALL_SOURCE_FILES} ${ALL_HEADER_FILES})
 
 # Use C++17 standards
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)
@@ -39,8 +30,16 @@ target_include_directories(
     PRIVATE ${PROJECT_SOURCE_DIR}/vendors/sfml/include/
 )
 
-# Link required libraries (add sfml-audio and sfml-network if needed)
-target_link_libraries(${PROJECT_NAME} sfml-graphics sfml-window sfml-system)
+# Find SQLite3
+find_package(SQLite3 REQUIRED)
+
+# Link required libraries
+target_link_libraries(${PROJECT_NAME} 
+    sfml-graphics 
+    sfml-window 
+    sfml-system
+    SQLite::SQLite3
+)
 
 # Copy resources folder to the binary output directory (to handle resource dependency for the executable)
 file(COPY ${CMAKE_SOURCE_DIR}/resources DESTINATION ${CMAKE_BINARY_DIR}/bin)

@@ -7,6 +7,10 @@
 #include "Simulation/Grid.h"
 #include "Renderer/WorldRenderer.h"
 #include "Simulation/Robot.h"
+#include "UI/UIManager.h"
+#include "Database/DatabaseManager.h"
+#include <memory>
+
 class Application {
 public:
     Application(); // Constructor: Sets up window, initializes Grid
@@ -23,7 +27,13 @@ private:
     Grid m_grid;
     WorldRenderer m_renderer;
     std::vector<Robot> m_robots;
+    UIManager m_uiManager;
+    std::unique_ptr<DatabaseManager> m_database;
 
-    // Maybe some clock for timing delta-time
+    // Clock for timing delta-time and FPS calculation
     sf::Clock m_clock;
+    sf::Clock m_fpsTimer;
+    int m_frameCount;
+    float m_currentFPS;
+    float m_deltaTime;
 };
