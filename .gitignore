@@ -46,5 +46,6 @@ _deps
 # Build files
 build/
 cmake-build-*/
+_codeql_build_dir/
 .vs/
 CMakeSettings.json
