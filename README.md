@@ -46,29 +46,41 @@ Stelle sicher, dass folgende Tools installiert sind:
 ### 1. Repository klonen
 
 ```bash
-git clone [https://github.com/DEIN_USERNAME/ARIS.git](https://github.com/DEIN_USERNAME/ARIS.git)
-cd ARIS
-
+git clone https://github.com/voricc/Cpp-ARIS.git
+cd Cpp-ARIS
+# Initialize submodules (SFML, ImGui, ImGui-SFML)
+git submodule update --init --recursive
 ```
+
+**Note:** This project uses git submodules for dependencies:
+- **SFML 2.6**: Graphics and window management
+- **ImGui 1.90.9**: UI library for the dashboard
+- **ImGui-SFML 2.6.x**: ImGui bindings for SFML
 
 ### 2. Dependencies installieren
 
 **Ubuntu / Debian:**
 
 ```bash
-sudo apt-get install libsfml-dev libsqlite3-dev
-
+sudo apt-get install libx11-dev libxrandr-dev libxcursor-dev libxi-dev \
+                     libudev-dev libgl1-mesa-dev libfreetype6-dev \
+                     libopenal-dev libflac-dev libvorbis-dev libsqlite3-dev
 ```
 
 **macOS (Homebrew):**
 
 ```bash
-brew install sfml sqlite
-
+brew install sqlite
+# SFML and ImGui are included as submodules
 ```
 
 **Windows:**
-Am einfachsten ist die Nutzung eines Paketmanagers wie **vcpkg** oder die Konfiguration über CMake in CLion.
+Dependencies (SFML, ImGui, ImGui-SFML) are managed via git submodules. You'll need:
+- Visual Studio 2019+ or MinGW-w64
+- CMake 3.15+
+- Git (to clone with submodules)
+
+Additional system dependencies will be handled by SFML's CMake configuration.
 
 ### 3. Build (Terminal / Make)
 
@@ -76,18 +88,27 @@ Am einfachsten ist die Nutzung eines Paketmanagers wie **vcpkg** oder die Konfig
 mkdir build
 cd build
 cmake ..
-make
-./ARIS
-
+make -j4
+./bin/A.R.I.S
 ```
 
 ### 4. Nutzung in CLion (JetBrains)
 
-1. Öffne den Ordner `ARIS` in CLion.
+1. Öffne den Ordner `Cpp-ARIS` in CLion.
 2. CLion erkennt automatisch die `CMakeLists.txt` und lädt das Projekt.
-3. Falls SFML nicht automatisch gefunden wird, füge unter `File -> Settings -> Build, Execution, Deployment -> CMake` in den **CMake Options** folgendes hinzu:
-`-DSFML_DIR=Pfad/zu/SFML/lib/cmake/SFML`
+3. Stelle sicher, dass die Submodules initialisiert sind:
+   - `git submodule update --init --recursive`
 4. Klicke auf **Build** (Hammer-Icon) und dann **Run** (Play-Button).
+
+### Troubleshooting
+
+**ImGui not found:**
+- Ensure submodules are initialized: `git submodule update --init --recursive`
+- The project uses ImGui v1.90.9 (compatible with imgui-sfml 2.6.x)
+
+**SFML not found:**
+- System SFML is not needed - it's included as a submodule
+- Make sure all system dependencies listed above are installed
 
 ---
 
@@ -120,12 +141,21 @@ ARIS/
 
 ## 🔜 Roadmap & TODOs
 
-* [] Grundlegendes Grid & Rendering
-* [] A* Pathfinding Implementierung
-* [] Roboter-Bewegung & Animation
+* [x] Grundlegendes Grid & Rendering
+* [x] A* Pathfinding Implementierung
+* [x] Roboter-Bewegung & Animation
+* [x] ImGui Dashboard Integration
 * [ ] **Heatmap-Visualisierung:** Anzeige stark frequentierter Wege
 * [ ] **Collision Avoidance:** Erweiterte Logik, damit Roboter einander ausweichen
 * [ ] **Netzwerk-Support:** Trennung von Server (Simulation) und Client (Viewer)
+* [ ] **Performance Metrics:** Detaillierte Analyse der Roboter-Effizienz
+* [ ] **Dynamic Task Prioritization:** Priorisierung von dringenden Aufträgen
+* [ ] **Battery Optimization:** Intelligente Ladestrategien für Roboter
+* [ ] **Multi-Floor Support:** Unterstützung für mehrstöckige Lager mit Aufzügen
+* [ ] **Path Prediction:** Vorhersage von Roboter-Routen zur Vermeidung von Staus
+* [ ] **Configuration System:** Externe Konfigurationsdateien (JSON/YAML) für Grid und Roboter-Parameter
+* [ ] **Replay System:** Aufzeichnung und Wiedergabe von Simulationen
+* [ ] **REST API:** HTTP-Schnittstelle für externe Steuerung und Monitoring
 
 ---
 

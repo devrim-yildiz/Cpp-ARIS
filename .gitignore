@@ -45,5 +45,6 @@ _deps
 
 # Build files
 build/
+cmake-build-*/
 .vs/
 CMakeSettings.json
