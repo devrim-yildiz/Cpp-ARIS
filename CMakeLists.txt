@@ -22,6 +22,11 @@ add_executable(${PROJECT_NAME} ${ALL_SOURCE_FILES} ${ALL_HEADER_FILES}
         include/Simulation
         include/Simulation/Robot.h
         src/Simulation/Robot.cpp
+        src/Simulation/Grid.cpp
+        src/Renderer/WorldRenderer.cpp
+        include/Renderer/WorldRenderer.h
+        include/Core/Application.h
+        src/Core/Application.cpp
 )
 
 # Use C++17 standards
