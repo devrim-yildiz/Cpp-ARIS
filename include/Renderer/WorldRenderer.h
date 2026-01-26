@@ -2,8 +2,6 @@
 // Created by Devrim Yildiz on 26.01.26.
 //
 
-#ifndef A_R_I_S_WORLDRENDERER_H
-#define A_R_I_S_WORLDRENDERER_H
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "../Simulation/Grid.h"
@@ -25,4 +23,3 @@ private:
     // Configuration (hardcoded for now, config file later)
     float m_cellSize = 30.0f;
 };
-#endif //A_R_I_S_WORLDRENDERER_H

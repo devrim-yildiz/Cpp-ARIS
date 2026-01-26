@@ -2,8 +2,6 @@
 // Created by Devrim Yildiz on 26.01.26.
 //
 
-#ifndef A_R_I_S_APPLICATION_H
-#define A_R_I_S_APPLICATION_H
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "Simulation/Grid.h"
@@ -28,4 +26,3 @@ private:
     // Maybe some clock for timing delta-time
     sf::Clock m_clock;
 };
-#endif //A_R_I_S_APPLICATION_H
