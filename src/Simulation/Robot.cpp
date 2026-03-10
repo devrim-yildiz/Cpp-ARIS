@@ -65,14 +65,8 @@ void Robot::TryMove(int dx, int dy, const Grid& grid, const std::vector<Robot>& 
         return;
     }
 
-    // Store previous position for lerp
-    m_prevX = static_cast<float>(m_x);
-    m_prevY = static_cast<float>(m_y);
-    m_lerpT = 0.0f;
-
-    m_x = targetX;
-    m_y = targetY;
-    m_battery = std::max(0.0f, m_battery - 0.5f);
+    // Store previous position for lerp and move
+    ApplyMove(targetX, targetY);
 }
 
 void Robot::FollowPath(const Grid& grid, const std::vector<Robot>& allRobots) {
@@ -93,14 +87,8 @@ void Robot::FollowPath(const Grid& grid, const std::vector<Robot>& allRobots) {
         return;
     }
 
-    // Store previous position for lerp
-    m_prevX = static_cast<float>(m_x);
-    m_prevY = static_cast<float>(m_y);
-    m_lerpT = 0.0f;
-
-    m_x = targetX;
-    m_y = targetY;
-    m_battery = std::max(0.0f, m_battery - 0.5f);
+    // Store previous position for lerp and move
+    ApplyMove(targetX, targetY);
     m_pathIndex++;
 
     // Path completed
@@ -108,6 +96,15 @@ void Robot::FollowPath(const Grid& grid, const std::vector<Robot>& allRobots) {
         m_path.clear();
         m_pathIndex = 0;
     }
+}
+
+void Robot::ApplyMove(int newX, int newY) {
+    m_prevX = static_cast<float>(m_x);
+    m_prevY = static_cast<float>(m_y);
+    m_lerpT = 0.0f;
+    m_x = newX;
+    m_y = newY;
+    m_battery = std::max(0.0f, m_battery - 0.5f);
 }
 
 void Robot::SetPathTarget(sf::Vector2i target, const Grid& grid) {

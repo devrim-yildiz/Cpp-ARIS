@@ -15,7 +15,7 @@ SimulationState::SimulationState(Application& app)
     }
 
     // Set up a view that frames the grid with some padding
-    float cellSize   = 30.0f;
+    float cellSize   = WorldRenderer::CELL_SIZE;
     float gridW      = m_grid.GetWidth() * cellSize;
     float gridH      = m_grid.GetHeight() * cellSize;
     float padding     = cellSize * 2.0f;
@@ -179,10 +179,9 @@ void SimulationState::Render(sf::RenderWindow& window) {
     m_renderer.DrawRobots(window, m_robots);
 
     // Draw HUD overlay with battery info
-    static constexpr float cellSize = 30.0f;
-    static constexpr float hudMargin = 20.0f;
-    static constexpr float hudTopOffset = -30.0f;
-    float hudX = m_grid.GetWidth() * cellSize + hudMargin;
+    float hudMargin = 20.0f;
+    float hudTopOffset = -30.0f;
+    float hudX = m_grid.GetWidth() * WorldRenderer::CELL_SIZE + hudMargin;
     float hudY = hudTopOffset;
 
     sf::Text hudTitle;
@@ -244,8 +243,7 @@ void SimulationState::HandleResize(unsigned int width, unsigned int height) {
 
 sf::Vector2i SimulationState::ScreenToGrid(sf::Vector2i screenPos) const {
     sf::Vector2f worldPos = m_app.GetWindow().mapPixelToCoords(screenPos, m_view);
-    static constexpr float cellSize = 30.0f;
-    int gx = static_cast<int>(worldPos.x / cellSize);
-    int gy = static_cast<int>(worldPos.y / cellSize);
+    int gx = static_cast<int>(worldPos.x / WorldRenderer::CELL_SIZE);
+    int gy = static_cast<int>(worldPos.y / WorldRenderer::CELL_SIZE);
     return {gx, gy};
 }

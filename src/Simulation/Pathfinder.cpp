@@ -26,7 +26,7 @@ namespace {
         std::size_t operator()(sf::Vector2i v) const {
             auto h1 = std::hash<int>{}(v.x);
             auto h2 = std::hash<int>{}(v.y);
-            return h1 ^ (h2 << 16);
+            return h1 ^ (h2 * 2654435761u);
         }
     };
 }

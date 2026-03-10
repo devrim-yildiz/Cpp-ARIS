@@ -9,6 +9,9 @@
 
 class WorldRenderer {
 public:
+    // Shared cell size constant
+    static constexpr float CELL_SIZE = 30.0f;
+
     // Constructor might load textures or fonts
     WorldRenderer();
 
@@ -22,6 +25,6 @@ private:
     // Helper to draw a single cell, keeps the main Draw() clean
     void DrawCell(sf::RenderWindow& window, int x, int y, CellType type);
 
-    // Configuration (hardcoded for now, config file later)
-    float m_cellSize = 30.0f;
+    // Configuration
+    float m_cellSize = CELL_SIZE;
 };

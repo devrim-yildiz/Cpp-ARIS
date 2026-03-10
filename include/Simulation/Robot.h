@@ -57,4 +57,5 @@ private:
     bool IsOccupiedByOtherRobot(int x, int y, const std::vector<Robot>& allRobots) const;
     void PickRandomDirection();
     void FollowPath(const Grid& grid, const std::vector<Robot>& allRobots);
+    void ApplyMove(int newX, int newY);
 };
