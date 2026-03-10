@@ -1,9 +1,10 @@
 //
-// SimulationState.cpp - Grid and robot simulation logic
+// SimulationState.cpp - Grid and robot simulation with camera controls and grid editor
 //
 #include "Core/SimulationState.h"
 #include "Core/Application.h"
 #include "Core/MainMenuState.h"
+#include "Simulation/Pathfinder.h"
 #include <iostream>
 
 SimulationState::SimulationState(Application& app)
@@ -61,6 +62,9 @@ SimulationState::SimulationState(Application& app)
     HandleResize(winSize.x, winSize.y);
 
     std::cout << "Simulation started. Robots active: " << m_robots.size() << std::endl;
+    std::cout << "Controls: Arrow keys = move robot, Scroll = zoom, Middle-click drag = pan" << std::endl;
+    std::cout << "          E = toggle editor, 1-4 = select brush, Left-click = paint cell" << std::endl;
+    std::cout << "          Right-click = send robot to target (A* pathfinding)" << std::endl;
 }
 
 void SimulationState::ProcessEvents() {
@@ -74,10 +78,65 @@ void SimulationState::ProcessEvents() {
             HandleResize(event.size.width, event.size.height);
         }
 
+        // Camera zoom with mouse wheel
+        if (event.type == sf::Event::MouseWheelScrolled) {
+            float zoomFactor = (event.mouseWheelScroll.delta > 0) ? 0.9f : 1.1f;
+            m_zoomLevel *= zoomFactor;
+            m_view.zoom(zoomFactor);
+        }
+
+        // Camera pan with middle mouse button
+        if (event.type == sf::Event::MouseButtonPressed &&
+            event.mouseButton.button == sf::Mouse::Middle) {
+            m_isPanning = true;
+            m_panStart = sf::Vector2i(event.mouseButton.x, event.mouseButton.y);
+        }
+        if (event.type == sf::Event::MouseButtonReleased &&
+            event.mouseButton.button == sf::Mouse::Middle) {
+            m_isPanning = false;
+        }
+        if (event.type == sf::Event::MouseMoved && m_isPanning) {
+            sf::Vector2i panEnd(event.mouseMove.x, event.mouseMove.y);
+            sf::Vector2f delta = m_app.GetWindow().mapPixelToCoords(m_panStart, m_view)
+                               - m_app.GetWindow().mapPixelToCoords(panEnd, m_view);
+            m_view.move(delta);
+            m_panStart = panEnd;
+        }
+
+        // Grid editor: left-click to paint cells
+        if (event.type == sf::Event::MouseButtonPressed &&
+            event.mouseButton.button == sf::Mouse::Left && m_editorActive) {
+            sf::Vector2i screenPos(event.mouseButton.x, event.mouseButton.y);
+            sf::Vector2i cell = ScreenToGrid(screenPos);
+            if (cell.x >= 0 && cell.x < m_grid.GetWidth() &&
+                cell.y >= 0 && cell.y < m_grid.GetHeight()) {
+                m_grid.SetCell(cell.x, cell.y, m_brushType);
+            }
+        }
+
+        // Right-click: send first robot to target via A* pathfinding
+        if (event.type == sf::Event::MouseButtonPressed &&
+            event.mouseButton.button == sf::Mouse::Right) {
+            sf::Vector2i screenPos(event.mouseButton.x, event.mouseButton.y);
+            sf::Vector2i target = ScreenToGrid(screenPos);
+            if (!m_robots.empty() &&
+                target.x >= 0 && target.x < m_grid.GetWidth() &&
+                target.y >= 0 && target.y < m_grid.GetHeight()) {
+                m_robots[0].setAutonomous(true);
+                m_robots[0].SetPathTarget(target, m_grid);
+                std::cout << "Robot 1 pathfinding to (" << target.x << "," << target.y << ")" << std::endl;
+            }
+        }
+
         if (event.type == sf::Event::KeyPressed) {
             // Manual control of first robot
             if (!m_robots.empty()) {
-                m_robots[0].setAutonomous(false);
+                if (event.key.code == sf::Keyboard::Up ||
+                    event.key.code == sf::Keyboard::Down ||
+                    event.key.code == sf::Keyboard::Left ||
+                    event.key.code == sf::Keyboard::Right) {
+                    m_robots[0].setAutonomous(false);
+                }
                 if (event.key.code == sf::Keyboard::Up)
                     m_robots[0].TryMove(0, -1, m_grid, m_robots);
                 if (event.key.code == sf::Keyboard::Down)
@@ -87,6 +146,18 @@ void SimulationState::ProcessEvents() {
                 if (event.key.code == sf::Keyboard::Right)
                     m_robots[0].TryMove(1, 0, m_grid, m_robots);
             }
+
+            // Toggle grid editor mode
+            if (event.key.code == sf::Keyboard::E) {
+                m_editorActive = !m_editorActive;
+                std::cout << "Grid editor " << (m_editorActive ? "enabled" : "disabled") << std::endl;
+            }
+
+            // Brush selection: 1=Empty, 2=Wall, 3=Shelf, 4=ChargingStation
+            if (event.key.code == sf::Keyboard::Num1) m_brushType = CellType::Empty;
+            if (event.key.code == sf::Keyboard::Num2) m_brushType = CellType::Wall;
+            if (event.key.code == sf::Keyboard::Num3) m_brushType = CellType::Shelf;
+            if (event.key.code == sf::Keyboard::Num4) m_brushType = CellType::ChargingStation;
 
             if (event.key.code == sf::Keyboard::Escape) {
                 m_app.ChangeState(std::make_unique<MainMenuState>(m_app));
@@ -131,6 +202,8 @@ void SimulationState::Render(sf::RenderWindow& window) {
             + std::to_string(static_cast<int>(robot.getBattery())) + "%";
         if (!robot.isAutonomous())
             label += " [Manual]";
+        if (robot.hasPath())
+            label += " [Path]";
 
         info.setString(label);
         info.setCharacterSize(10);
@@ -144,9 +217,35 @@ void SimulationState::Render(sf::RenderWindow& window) {
         window.draw(info);
         yOff += 16.0f;
     }
+
+    // Editor mode indicator
+    if (m_editorActive) {
+        sf::Text editorText;
+        editorText.setFont(m_font);
+        std::string brushName;
+        switch (m_brushType) {
+            case CellType::Empty:           brushName = "Empty";    break;
+            case CellType::Wall:            brushName = "Wall";     break;
+            case CellType::Shelf:           brushName = "Shelf";    break;
+            case CellType::ChargingStation: brushName = "Station";  break;
+        }
+        editorText.setString("EDITOR [" + brushName + "]");
+        editorText.setCharacterSize(12);
+        editorText.setFillColor(sf::Color::Magenta);
+        editorText.setPosition(hudX, yOff + 10.0f);
+        window.draw(editorText);
+    }
 }
 
 void SimulationState::HandleResize(unsigned int width, unsigned int height) {
     m_view = m_app.GetLetterboxView(m_view, width, height);
     m_app.GetWindow().setView(m_view);
+}
+
+sf::Vector2i SimulationState::ScreenToGrid(sf::Vector2i screenPos) const {
+    sf::Vector2f worldPos = m_app.GetWindow().mapPixelToCoords(screenPos, m_view);
+    static constexpr float cellSize = 30.0f;
+    int gx = static_cast<int>(worldPos.x / cellSize);
+    int gy = static_cast<int>(worldPos.y / cellSize);
+    return {gx, gy};
 }

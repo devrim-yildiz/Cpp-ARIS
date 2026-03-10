@@ -1,5 +1,5 @@
 //
-// SimulationState.h - Grid and robot simulation logic
+// SimulationState.h - Grid and robot simulation with camera controls and grid editor
 //
 
 #pragma once
@@ -25,5 +25,15 @@ private:
     sf::View m_view;
     sf::Font m_font;
 
+    // Camera controls
+    float m_zoomLevel = 1.0f;
+    bool m_isPanning = false;
+    sf::Vector2i m_panStart;
+
+    // Grid editor
+    CellType m_brushType = CellType::Wall;
+    bool m_editorActive = false;
+
     void HandleResize(unsigned int width, unsigned int height);
+    sf::Vector2i ScreenToGrid(sf::Vector2i screenPos) const;
 };
