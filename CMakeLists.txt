@@ -25,12 +25,14 @@ add_executable(${PROJECT_NAME} ${ALL_SOURCE_FILES} ${ALL_HEADER_FILES}
         include/Core/SimulationState.h
         include/Simulation/Robot.h
         include/Simulation/Grid.h
+        include/Simulation/Pathfinder.h
         include/Renderer/WorldRenderer.h
         src/Core/Application.cpp
         src/Core/MainMenuState.cpp
         src/Core/SimulationState.cpp
         src/Simulation/Robot.cpp
         src/Simulation/Grid.cpp
+        src/Simulation/Pathfinder.cpp
         src/Renderer/WorldRenderer.cpp
 )
 

@@ -14,9 +14,9 @@ void WorldRenderer::DrawRobots(sf::RenderWindow& window, const std::vector<Robot
     robotShape.setFillColor(sf::Color::Cyan);
 
     for (const auto& robot : robots) {
-        // Math: Grid Coordinate -> Screen Pixel
-        float pixelX = robot.getX() * m_cellSize + offset;
-        float pixelY = robot.getY() * m_cellSize + offset;
+        // Use smooth lerped render position instead of snapping to grid
+        float pixelX = robot.getRenderX() * m_cellSize + offset;
+        float pixelY = robot.getRenderY() * m_cellSize + offset;
 
         robotShape.setPosition(pixelX, pixelY);
         window.draw(robotShape);
