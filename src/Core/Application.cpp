@@ -21,12 +21,16 @@ void Application::Run() {
         float dt = m_clock.restart().asSeconds();
 
         if (!m_states.empty()) {
-            m_states.top()->ProcessEvents();
-            m_states.top()->Update(dt);
+            State* current = m_states.top().get();
+            current->ProcessEvents();
 
-            m_window.clear(sf::Color::Black);
-            m_states.top()->Render(m_window);
-            m_window.display();
+            // State may have changed during ProcessEvents; verify before continuing
+            if (!m_states.empty() && m_states.top().get() == current) {
+                current->Update(dt);
+                m_window.clear(sf::Color::Black);
+                current->Render(m_window);
+                m_window.display();
+            }
         } else {
             m_window.close();
         }

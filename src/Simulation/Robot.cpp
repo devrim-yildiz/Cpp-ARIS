@@ -3,7 +3,7 @@
 //
 #include "Simulation/Robot.h"
 #include <iostream>
-#include <cstdlib>
+#include <random>
 
 Robot::Robot(int id, int startX, int startY)
     : m_id(id), m_x(startX), m_y(startY)
@@ -66,8 +66,10 @@ bool Robot::IsOccupiedByOtherRobot(int x, int y, const std::vector<Robot>& allRo
 }
 
 void Robot::PickRandomDirection() {
+    static std::mt19937 rng{std::random_device{}()};
+    static std::uniform_int_distribution<int> dist(0, 3);
     static const int dirs[4][2] = {{0,-1},{0,1},{-1,0},{1,0}};
-    int pick = std::rand() % 4;
+    int pick = dist(rng);
     m_dirX = dirs[pick][0];
     m_dirY = dirs[pick][1];
 }

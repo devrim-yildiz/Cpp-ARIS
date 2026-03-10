@@ -108,9 +108,11 @@ void SimulationState::Render(sf::RenderWindow& window) {
     m_renderer.DrawRobots(window, m_robots);
 
     // Draw HUD overlay with battery info
-    float cellSize = 30.0f;
-    float hudX = m_grid.GetWidth() * cellSize + 20.0f;
-    float hudY = -30.0f;
+    static constexpr float cellSize = 30.0f;
+    static constexpr float hudMargin = 20.0f;
+    static constexpr float hudTopOffset = -30.0f;
+    float hudX = m_grid.GetWidth() * cellSize + hudMargin;
+    float hudY = hudTopOffset;
 
     sf::Text hudTitle;
     hudTitle.setFont(m_font);
