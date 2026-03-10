@@ -64,7 +64,7 @@ private:
     sf::Color m_hudText{180, 220, 255};           ///< Cool-white HUD text.
 
     // ---- Font & HUD ----
-    sf::Font m_font;                    ///< FiraCode-Regular loaded from resources/.
+    sf::Font m_font;                    ///< FiraCode-Regular loaded from resources/FiraCode-Regular.ttf.
     bool     m_fontLoaded = false;      ///< Guard against missing font.
 
     // ---- FPS calculation ----

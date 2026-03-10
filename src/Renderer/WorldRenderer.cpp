@@ -253,7 +253,8 @@ void WorldRenderer::DrawRobot(sf::RenderWindow& window, const Robot& robot,
         const float barH = 4.f;
         const float barX = cx - barW * 0.5f;
         const float barY = cy - outerR - barH - 3.f;
-        const float batteryPct = 1.f; // 100% – placeholder until battery system
+        // TODO: replace with robot.getBatteryLevel() once battery system is implemented
+        const float batteryPct = 1.f; // 100% – placeholder
 
         sf::RectangleShape barBg(sf::Vector2f(barW, barH));
         barBg.setPosition(barX, barY);
@@ -300,6 +301,7 @@ void WorldRenderer::DrawHUD(sf::RenderWindow& window, std::size_t robotCount,
     const float panelH = 36.f;
 
     // --- FPS calculation (update every 0.5 s) ---
+    // Note: assumes DrawHUD is called exactly once per frame.
     const float dt = m_fpsClock.restart().asSeconds();
     m_fpsTimer += dt;
     ++m_frameCount;
@@ -368,7 +370,8 @@ void WorldRenderer::DrawHUD(sf::RenderWindow& window, std::size_t robotCount,
 
     // --- Easter egg #5: scrolling scan-line (CRT effect) ---
     {
-        m_scanLineOffset += dt * 80.f;
+        constexpr float kScanLineSpeed = 80.f;
+        m_scanLineOffset += dt * kScanLineSpeed;
         if (m_scanLineOffset > static_cast<float>(winSize.y))
             m_scanLineOffset = 0.f;
         sf::RectangleShape scanLine(
