@@ -1,29 +1,30 @@
 //
-// Created by Devrim Yildiz on 26.01.26.
+// Application.h - Core application managing window, clock, and state stack
 //
 
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "Simulation/Grid.h"
-#include "Renderer/WorldRenderer.h"
-#include "Simulation/Robot.h"
+#include <memory>
+#include <stack>
+#include "Core/State.h"
+
 class Application {
 public:
-    Application(); // Constructor: Sets up window, initializes Grid
-    void Run();    // The "Game Loop": HandleInput -> Update -> Render
+    Application();
+    void Run();
+
+    void PushState(std::unique_ptr<State> state);
+    void PopState();
+    void ChangeState(std::unique_ptr<State> state);
+
+    sf::RenderWindow& GetWindow();
+    sf::View GetLetterboxView(const sf::View& view, unsigned int windowWidth, unsigned int windowHeight) const;
+
+    static constexpr unsigned int DESIGN_WIDTH  = 1920;
+    static constexpr unsigned int DESIGN_HEIGHT = 1080;
 
 private:
-    void ProcessEvents(); // Keyboard/Mouse inputs
-    void Update();        // Move robots, update logic
-    void Render();        // clear -> worldRenderer.Draw() -> display
-
-private:
-    // The Core Systems
     sf::RenderWindow m_window;
-    Grid m_grid;
-    WorldRenderer m_renderer;
-    std::vector<Robot> m_robots;
-
-    // Maybe some clock for timing delta-time
     sf::Clock m_clock;
+    std::stack<std::unique_ptr<State>> m_states;
 };

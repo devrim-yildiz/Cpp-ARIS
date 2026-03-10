@@ -19,14 +19,19 @@ file(GLOB_RECURSE ALL_HEADER_FILES "${CMAKE_SOURCE_DIR}/include/*.hpp")
 
 # Add the main target.
 add_executable(${PROJECT_NAME} ${ALL_SOURCE_FILES} ${ALL_HEADER_FILES}
-        include/Simulation
+        include/Core/State.h
+        include/Core/Application.h
+        include/Core/MainMenuState.h
+        include/Core/SimulationState.h
         include/Simulation/Robot.h
+        include/Simulation/Grid.h
+        include/Renderer/WorldRenderer.h
+        src/Core/Application.cpp
+        src/Core/MainMenuState.cpp
+        src/Core/SimulationState.cpp
         src/Simulation/Robot.cpp
         src/Simulation/Grid.cpp
         src/Renderer/WorldRenderer.cpp
-        include/Renderer/WorldRenderer.h
-        include/Core/Application.h
-        src/Core/Application.cpp
 )
 
 # Use C++17 standards
