@@ -31,10 +31,10 @@ void WorldRenderer::DrawGrid(sf::RenderWindow& window, const Grid& grid) {
 
             CellType type = grid.GetCell(x, y);
             switch (type) {
-            case CellType::Empty:  cellShape.setFillColor(sf::Color(50, 50, 50)); break; // Dark Grey
-            case CellType::Wall:   cellShape.setFillColor(sf::Color::White);      break;
-            case CellType::Shelf:  cellShape.setFillColor(sf::Color(139, 69, 19)); break; // Brown
-            default:               cellShape.setFillColor(sf::Color::Magenta);    break;
+            case CellType::Empty:           cellShape.setFillColor(sf::Color(50, 50, 50));  break;
+            case CellType::Wall:            cellShape.setFillColor(sf::Color::White);       break;
+            case CellType::Shelf:           cellShape.setFillColor(sf::Color(139, 69, 19)); break;
+            case CellType::ChargingStation: cellShape.setFillColor(sf::Color(0, 200, 0));   break;
             }
             window.draw(cellShape);
         }

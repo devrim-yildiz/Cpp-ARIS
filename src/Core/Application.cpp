@@ -1,58 +1,84 @@
 //
-// Created by Devrim Yildiz on 26.01.26.
+// Application.cpp - Core application implementation
 //
 #include "Core/Application.h"
+#include "Core/MainMenuState.h"
 #include <iostream>
 
 Application::Application()
-    : m_window(sf::VideoMode(800, 600), "ARIS Simulation"),
-      m_grid(20, 15)
+    : m_window(sf::VideoMode::getDesktopMode(), "A.R.I.S.", sf::Style::Default)
 {
     m_window.setFramerateLimit(60);
 
-    // Setup Grid (Walls/Shelves)
-    m_grid.SetCell(5, 5, CellType::Wall);
+    // Start with the main menu
+    PushState(std::make_unique<MainMenuState>(*this));
 
-    // Robot(ID, StartX, StartY) spawner
-    m_robots.emplace_back(1, 2, 2);
-    m_robots.emplace_back(2, 4, 4);
-
-    std::cout << "System Initialized. Robots active: " << m_robots.size() << std::endl;
+    std::cout << "A.R.I.S. Engine Initialized." << std::endl;
 }
 
 void Application::Run() {
     while (m_window.isOpen()) {
-        ProcessEvents();
-        Update();
-        Render();
-    }
-}
+        float dt = m_clock.restart().asSeconds();
 
-void Application::ProcessEvents() {
-    sf::Event event;
-    while (m_window.pollEvent(event)) {
-        if (event.type == sf::Event::Closed)
-            m_window.close();
+        if (!m_states.empty()) {
+            State* current = m_states.top().get();
+            current->ProcessEvents();
 
-        // InputTests
-        if (event.type == sf::Event::KeyPressed) {
-            if (!m_robots.empty()) {
-                if (event.key.code == sf::Keyboard::Up)    m_robots[0].TryMove(0, -1, m_grid);
-                if (event.key.code == sf::Keyboard::Down)  m_robots[0].TryMove(0, 1, m_grid);
-                if (event.key.code == sf::Keyboard::Left)  m_robots[0].TryMove(-1, 0, m_grid);
-                if (event.key.code == sf::Keyboard::Right) m_robots[0].TryMove(1, 0, m_grid);
+            // State may have changed during ProcessEvents; verify before continuing
+            if (!m_states.empty() && m_states.top().get() == current) {
+                current->Update(dt);
+                m_window.clear(sf::Color::Black);
+                current->Render(m_window);
+                m_window.display();
             }
+        } else {
+            m_window.close();
         }
     }
 }
 
-void Application::Update() {
-    // Logic updates (Robot movement) will go here later
+void Application::PushState(std::unique_ptr<State> state) {
+    m_states.push(std::move(state));
 }
 
-void Application::Render() {
-    m_window.clear();
-    m_renderer.DrawGrid(m_window, m_grid);
-    m_renderer.DrawRobots(m_window, m_robots);
-    m_window.display();
+void Application::PopState() {
+    if (!m_states.empty()) {
+        m_states.pop();
+    }
+}
+
+void Application::ChangeState(std::unique_ptr<State> state) {
+    if (!m_states.empty()) {
+        m_states.pop();
+    }
+    m_states.push(std::move(state));
+}
+
+sf::RenderWindow& Application::GetWindow() {
+    return m_window;
+}
+
+sf::View Application::GetLetterboxView(const sf::View& view, unsigned int windowWidth, unsigned int windowHeight) const {
+    sf::View result = view;
+
+    float windowRatio  = static_cast<float>(windowWidth) / static_cast<float>(windowHeight);
+    float viewRatio    = view.getSize().x / view.getSize().y;
+
+    float sizeX = 1.0f;
+    float sizeY = 1.0f;
+    float posX  = 0.0f;
+    float posY  = 0.0f;
+
+    if (windowRatio >= viewRatio) {
+        // Window wider than view -> pillarboxing
+        sizeX = viewRatio / windowRatio;
+        posX  = (1.0f - sizeX) / 2.0f;
+    } else {
+        // Window taller than view -> letterboxing
+        sizeY = windowRatio / viewRatio;
+        posY  = (1.0f - sizeY) / 2.0f;
+    }
+
+    result.setViewport(sf::FloatRect(posX, posY, sizeX, sizeY));
+    return result;
 }
