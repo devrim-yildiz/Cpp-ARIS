@@ -10,8 +10,10 @@ Application::Application()
 {
     m_window.setFramerateLimit(60);
 
-    // Setup Grid (Walls/Shelves)
+    // Setup Grid (Walls/Shelves/ChargingStations)
     m_grid.SetCell(5, 5, CellType::Wall);
+    m_grid.SetCell(10, 7, CellType::Shelf);
+    m_grid.SetCell(15, 10, CellType::ChargingStation);
 
     // Robot(ID, StartX, StartY) spawner
     m_robots.emplace_back(1, 2, 2);
@@ -51,8 +53,10 @@ void Application::Update() {
 }
 
 void Application::Render() {
+    const float elapsed = m_clock.getElapsedTime().asSeconds();
     m_window.clear();
-    m_renderer.DrawGrid(m_window, m_grid);
-    m_renderer.DrawRobots(m_window, m_robots);
+    m_renderer.DrawGrid(m_window, m_grid, elapsed);
+    m_renderer.DrawRobots(m_window, m_robots, elapsed);
+    m_renderer.DrawHUD(m_window, m_robots.size(), elapsed);
     m_window.display();
 }
